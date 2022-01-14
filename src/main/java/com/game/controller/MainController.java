@@ -38,4 +38,22 @@ public class MainController {
         return players.subList(pageNumber*pageSize, Math.min(pageNumber * pageSize + pageSize, players.size()));
     }
 
+    @GetMapping("/players/count")
+    public Integer getPlayersCount(@RequestParam(name ="name", defaultValue = "", required = false)String name,
+                                   @RequestParam(name ="title", defaultValue = "", required = false)String title,
+                                   @RequestParam(name ="race", defaultValue = "", required = false) Race race,
+                                   @RequestParam(name ="profession", defaultValue = "", required = false) Profession profession,
+                                   @RequestParam(name ="after", defaultValue = "", required = false)Long after,
+                                   @RequestParam(name ="before", defaultValue = "", required = false)Long before,
+                                   @RequestParam(name ="banned", defaultValue = "", required = false)Boolean banned,
+                                   @RequestParam(name ="minExperience", defaultValue = "", required = false)Integer minExperience,
+                                   @RequestParam(name ="maxExperience", defaultValue = "", required = false)Integer maxExperience,
+                                   @RequestParam(name ="minLevel", defaultValue = "", required = false)Integer minLevel,
+                                   @RequestParam(name ="maxLevel", defaultValue = "", required = false)Integer maxLevel,
+                                   @RequestParam( name ="order", defaultValue = "ID", required = false) PlayerOrder order){
+
+        return playerService.getAllPlayers
+                (name, title, race, profession, after, before, banned, minExperience, maxExperience, minLevel, maxLevel, order).size();
+    }
+
 }
