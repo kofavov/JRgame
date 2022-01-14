@@ -11,4 +11,7 @@ import java.util.List;
 public interface PlayerService {
 
     List<Player> getAllPlayers(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel, PlayerOrder order);
+    Player getPlayerById (long id);
+
+    void deletePlayerById(long id);
 }

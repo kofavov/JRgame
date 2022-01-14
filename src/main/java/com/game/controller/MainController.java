@@ -6,6 +6,8 @@ import com.game.entity.Race;
 import com.game.service.PlayerService;
 import com.game.service.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +56,21 @@ public class MainController {
 
         return playerService.getAllPlayers
                 (name, title, race, profession, after, before, banned, minExperience, maxExperience, minLevel, maxLevel, order).size();
+    }
+    @GetMapping("/players/{id}")
+    public ResponseEntity<Player> getPlayerById(@PathVariable("id") long id){
+        if (id==0)return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (playerService.getPlayerById(id)==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(playerService.getPlayerById(id), HttpStatus.OK);
+    }
+    @DeleteMapping("/players/{id}")
+    public ResponseEntity deletePlayerById(@PathVariable("id") long id){
+        if (id==0)return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (playerService.getPlayerById(id)==null)return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        playerService.deletePlayerById(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class PlayerServiceImpl implements PlayerService {
     @Autowired
@@ -45,6 +47,18 @@ public class PlayerServiceImpl implements PlayerService {
         players.removeIf(player -> player.getId()==-1L);
 //        List<Player>players = playerRep.getAllPlayers(name,  title, race,  profession, after,  before,  banned, minExperience,  maxExperience,  minLevel, maxLevel);
         return players;
+    }
+
+    @Override
+    public Player getPlayerById(long id) {
+        Optional<Player> player = playerRep.findById(id);
+        return player.orElse(null);
+    }
+
+    @Override
+    public void deletePlayerById(long id) {
+        playerRep.deleteById(id);
+
     }
 
 
