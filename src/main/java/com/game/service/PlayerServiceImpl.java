@@ -5,6 +5,7 @@ import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.repository.PlayerRep;
+import com.game.repository.PlayerRepWithQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
@@ -18,8 +19,14 @@ import java.util.Optional;
 public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private PlayerRep playerRep;
+//    @Autowired
+//    private PlayerRepWithQuery playerRepWithQuery;
 
-
+//    @Override
+//    public List<Player> getAllPlayers2(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel, PlayerOrder order) {
+//
+//        return playerRepWithQuery.findAllWithQuery(name, title, race, profession, after, before, banned, minExperience, maxExperience, minLevel, maxLevel);
+//    }
 
     @Override
     public List<Player> getAllPlayers(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel, PlayerOrder order) {
@@ -61,5 +68,30 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
-
+    @Override
+    public Player createPlayer(Player player) {
+//        System.out.println(player.getBirthday().getYear());
+//        System.out.println(new Date(100,0,1).getTime());
+//        System.out.println(new Date(1100,0,1).getYear());
+        if (player.getBirthday().getTime()<new Date(100,0,1).getTime()
+                ||player.getBirthday().getTime()>=new Date(1101,0,1).getTime()
+        )return null;
+//        if (player.getId()==null)player.setId(100L);
+        int lvl = (int) (Math.sqrt(2500+200*player.getExperience())-50)/100;
+        int untilNextLevel = 50*(lvl+1)*(lvl+2)-player.getExperience();
+        if(player.getBanned()==null)player.setBanned(false);
+//        Player player = new Player();
+//        player.setName(name);
+//        player.setTitle(title);
+//        player.setRace(race);
+//        player.setProfession(profession);
+//        player.setExperience(experience);
+        player.setLevel(lvl);
+//        player.setBirthday(new Date(birthday));
+//        player.setBanned(banned);
+        player.setUntilNextLevel(untilNextLevel);
+//        playerRep.save(new Player(name,title,race,profession,experience,lvl,untilNextLevel,new Date(birthday),banned));
+        playerRep.save(player);
+        return player;
+    }
 }

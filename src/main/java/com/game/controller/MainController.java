@@ -3,7 +3,6 @@ package com.game.controller;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
-import com.game.service.PlayerService;
 import com.game.service.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,7 @@ public class MainController {
         List<Player> players = playerService.getAllPlayers(
                 name, title, race, profession, after, before, banned,
                 minExperience, maxExperience, minLevel, maxLevel,order);
-
+//        List<Player> players = playerService.getAllPlayers2(name, title, race, profession, after, before, banned, minExperience, maxExperience, minLevel, maxLevel, order);
         return players.subList(pageNumber*pageSize, Math.min(pageNumber * pageSize + pageSize, players.size()));
     }
 
@@ -71,6 +70,31 @@ public class MainController {
         playerService.deletePlayerById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PostMapping("/players")
+    public ResponseEntity createPlayer(@RequestBody(required = false) Player player){
+        System.out.println(player.toString());
+//        if (player.getId()!=null)player.setId(null);
+        if (player==null
+                |player.getName()==null
+                |player.getTitle()==null
+                |player.getProfession()==null
+                |player.getRace()==null
+                |player.getExperience()==null
+                |player.getBirthday()==null)return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        if (player.getName().length()>12
+                |player.getTitle().length()>30
+                |player.getName().equals("")
+                |player.getExperience()>10000000
+                |player.getExperience()<0
+                |player.getBirthday().getTime()<0
+                )return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+
+
+        Player p=playerService.createPlayer(player);
+        if (p==null)return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(p,HttpStatus.OK);
     }
 
 }
