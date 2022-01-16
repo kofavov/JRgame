@@ -94,4 +94,60 @@ public class PlayerServiceImpl implements PlayerService {
         playerRep.save(player);
         return player;
     }
+
+    @Override
+    public Player editPlayer(Player player,long id) {
+        System.out.println(player+"   id" + id);
+
+
+        Optional<Player> playerOptional = playerRep.findById(id);
+        if (playerOptional.isPresent()){
+            Player p = playerOptional.get();
+            System.out.println(p);
+            System.out.println(player);
+            if (player.getName()!=null){
+                    if (player.getName().length()>12
+                    &&player.getName().equals(""))return null;
+                p.setName(player.getName());}
+
+            if (player.getBanned()!=null)p.setBanned(player.getBanned());
+
+
+
+            if (player.getBirthday()!=null){
+                     if (player.getBirthday().getTime()<new Date(100,0,1).getTime()
+                        ||player.getBirthday().getTime()>=new Date(1101,0,1).getTime()
+                        )return null;
+                p.setBirthday(player.getBirthday());}
+
+
+
+            if (player.getExperience()!=null){
+                if(player.getExperience()>10000000&&player.getExperience()<0)return null;
+                p.setExperience(player.getExperience());
+                int lvl = (int) (Math.sqrt(2500+200*player.getExperience())-50)/100;
+                int untilNextLevel = 50*(lvl+1)*(lvl+2)-player.getExperience();
+
+                player.setLevel(lvl);
+                player.setUntilNextLevel(untilNextLevel);
+                if (player.getUntilNextLevel()!=null)p.setUntilNextLevel(player.getUntilNextLevel());
+                if (player.getLevel()!=null)p.setLevel(player.getLevel());
+            }
+
+            if (player.getProfession()!=null)p.setProfession(player.getProfession());
+
+            if (player.getRace()!=null)p.setRace(player.getRace());
+
+            if (player.getTitle()!=null){
+                if(player.getTitle().length()>30)return null;
+                p.setTitle(player.getTitle());}
+
+            playerRep.save(p);
+            System.out.println(p);
+            return p;
+        }
+        else return null;
+
+
+    }
 }

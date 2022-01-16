@@ -15,5 +15,7 @@ public interface PlayerService {
     void deletePlayerById(long id);
     Player createPlayer(Player player);
 
+    Player editPlayer(Player player,long id);
+
 //    List<Player> getAllPlayers2(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel, PlayerOrder order);
 }
