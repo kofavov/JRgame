@@ -1,19 +1,19 @@
 package com.game.service;
 
 import com.game.controller.PlayerOrder;
+import com.game.entity.PagePlayer;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.repository.PlayerRep;
-import com.game.repository.PlayerRepWithQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -29,30 +29,19 @@ public class PlayerServiceImpl implements PlayerService {
 //    }
 
     @Override
-    public List<Player> getAllPlayers(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel, PlayerOrder order) {
-        if (name==null)name="";
-        if (title==null)title="";
-        if (after==null) after=Long.MIN_VALUE;
-        if (before==null)before=Long.MAX_VALUE;
-        if (minExperience==null)minExperience=Integer.MIN_VALUE;
-        if (maxExperience==null)maxExperience=Integer.MAX_VALUE;
-        if (minLevel==null)minLevel=Integer.MIN_VALUE;
-        if (maxLevel==null)maxLevel=Integer.MAX_VALUE;
+    public List<Player> getAllPlayers(PagePlayer page) {
 
-        List<Player> players = playerRep.findAll(Sort.by(Sort.Direction.ASC,order.getFieldName()));
-        for (Player p:players) {
-            if (!name.equals("")&&!p.getName().contains(name))p.setId(-1L);
-            if (!title.equals("")&&!p.getTitle().contains(title))p.setId(-1L);
-            if (!p.getBirthday().after(new Date(after)))p.setId(-1L);
-            if (!p.getBirthday().before(new Date(before)))p.setId(-1L);
-            if (banned!=null&&p.getBanned() != banned)p.setId(-1L);
-            if (p.getExperience()<minExperience | p.getExperience()>maxExperience)p.setId(-1L);
-            if (p.getLevel()<minLevel|p.getLevel()>maxLevel)p.setId(-1L);
-            if (race!=null && p.getRace()!=race)p.setId(-1L);
-            if (profession!=null && p.getProfession()!=profession)p.setId(-1L);
-        }
-        players.removeIf(player -> player.getId()==-1L);
-//        List<Player>players = playerRep.getAllPlayers(name,  title, race,  profession, after,  before,  banned, minExperience,  maxExperience,  minLevel, maxLevel);
+        List<Player> players = playerRep.findAll(Sort.by(Sort.Direction.ASC,page.getOrder().getFieldName()))
+                .stream().filter(player -> !player.getName().equals("")&&player.getName().contains(page.getName()))
+                .filter(player -> !player.getTitle().equals("")&&player.getTitle().contains(page.getTitle()))
+                .filter(player ->  player.getBirthday().after(new Date(page.getAfter())))
+                .filter(player ->  player.getBirthday().before(new Date(page.getBefore())))
+                .filter(player -> player.getBanned() == page.getBanned()||page.getBanned()==null)
+                .filter(player -> player.getExperience()>= page.getMinExperience() && player.getExperience() <= page.getMaxExperience())
+                .filter(player ->  player.getLevel()>=page.getMinLevel() && player.getLevel()<= page.getMaxLevel())
+                .filter(player -> page.getRace()==null || player.getRace()==page.getRace())
+                .filter(player -> page.getProfession()==null || player.getProfession()==page.getProfession())
+                .collect(Collectors.toList());
         return players;
     }
 
@@ -103,8 +92,8 @@ public class PlayerServiceImpl implements PlayerService {
         Optional<Player> playerOptional = playerRep.findById(id);
         if (playerOptional.isPresent()){
             Player p = playerOptional.get();
-            System.out.println(p);
-            System.out.println(player);
+//            System.out.println(p);
+//            System.out.println(player);
             if (player.getName()!=null){
                     if (player.getName().length()>12
                     &&player.getName().equals(""))return null;
@@ -143,7 +132,7 @@ public class PlayerServiceImpl implements PlayerService {
                 p.setTitle(player.getTitle());}
 
             playerRep.save(p);
-            System.out.println(p);
+//            System.out.println(p);
             return p;
         }
         else return null;
